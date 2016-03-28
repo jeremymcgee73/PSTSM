@@ -35,6 +35,11 @@ function Stop-TsmSession
     }
     Process
     {
+        #We are using splatting to pass the parameters to Invoke-TSMCommand
+        #But, SessionNumber is not a parameter that it accepts so we must remove it.
+        if ($PSBoundParameters['SessionNumber']) {
+            $PSBoundParameters.Remove('SessionNumber') | Out-Null
+        }
         $cancelSession = ($_.SessionNumber).replace(",","")
         $SessionNumber | ForEach-Object {
              $cancelSession
