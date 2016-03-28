@@ -17,15 +17,17 @@
 function Get-TsmSession
 {
 	[OutputType('System.Management.Automation.PSCustomObject')]
-	[CmdletBinding(
-        DefaultParameterSetName='ClientName'
-	)]	
     Param
     (
+        [Parameter(Position=0)]
 		[String]$ClientName,
+        [Parameter(Position=1)]
 		[String]$UserName,
+        [Parameter(Position=2)]
 		[String]$Password,
+        [Parameter(Position=3)]
 		[String]$TCPServerAddress,
+        [Parameter(Position=4)]
 		[int]$TCPPort
     )
 
@@ -35,6 +37,11 @@ function Get-TsmSession
     }
     Process
     {
+        #We are using splatting to pass the parameters to Invoke-TSMCommand
+        #But, ClientName is not a parameter that it accepts so we must remove it.
+        if ($PSBoundParameters['ClientName']) {
+            $PSBoundParameters.Remove('ClientName') | Out-Null
+        }
         $executeTSM = Invoke-TsmCommand -Command "query session" @psboundparameters
         $tsmSessionAll = ConvertFrom-Csv -Delimiter "`t" -InputObject $executeTSM -Header "SessionNumber", "CommMethod", "SessionState", "WaitTime", "BytesSent", "BytesReceived", "SessionType", "Platform", "ClientName"
 
