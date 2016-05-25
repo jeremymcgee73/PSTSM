@@ -2,33 +2,33 @@
 .Synopsis
    Gets the TSM Associations that exist on a server.
 .DESCRIPTION
-   This cmdlet gets the TSM Associations that exist on a server. The default
-   server is the connection set in your opt file. You can also choose
-   which TSM server you are querying. 
+   This cmdlet gets the TSM Associations that exist on a server.
+   If you use the SchedName parameter, you must also pass the
+   policy domain parameter.
 .EXAMPLE
    Get-TsmAssociation
 .EXAMPLE
-   Get-TsmAssociation 
+   Get-TsmAssociation -PolicyDomain POLICYDOMAIN -SchedName SCHEDNAME
+.EXAMPLE
+   Get-TsmAssociation -PolicyDomain POLICYDOMAIN
+.EXAMPLE
+   Get-TsmAssociation POLICYDOMAIN SCHEDNAME
+.EXAMPLE
+   Get-TsmAssociation POLICYDOMAIN
 .OUTPUTS
    PSCustomObject
 #>
 function Get-TsmAssociation
 {
-	[OutputType('System.Management.Automation.PSCustomObject')]
-    Param
-    (
-        [Parameter(Position=0)]
-		[String]$PolicyDomain,
-        [Parameter(Position=1)]
-		[String]$SchedName,
-        [Parameter(Position=2)]
-		[String]$NodeName,
-		[String]$UserName,
-		[String]$Password,
-		[String]$TCPServerAddress,
-		[int]$TCPPort
+    [CmdletBinding(DefaultParametersetName='None')] 
+    param( 
+		    [String]$UserName,
+		    [String]$Password,
+		    [String]$TCPServerAddress,
+		    [int]$TCPPort,
+        [Parameter(ParameterSetName='Policy',Mandatory=$true,Position=0)][String]$PolicyDomain,
+        [Parameter(ParameterSetName='Policy',Mandatory=$false,Position=1)][string]$SchedName
     )
-
 
     Begin
     {
@@ -36,11 +36,16 @@ function Get-TsmAssociation
     Process
     {
 
-        #We only want to set the Associationname to query, if it were passed
+        #The parameterset above makes sure there is a policydomain, if there is a schedname
+        #But you can have a policydomain without a schedname
         $TsmAssociationCommand = "Query Association"
-        If($AssociationName)
-        {
-            $TsmAssociationCommand = $TsmAssociationCommand + " $AssociationName"
+        If($PolicyDomain) {
+            if($SchedName) {
+                $TsmAssociationCommand = $TsmAssociationCommand + " $PolicyDomain" + " $SchedName"
+            }
+            else {
+                $TsmAssociationCommand = $TsmAssociationCommand + " $PolicyDomain"
+            }
         }
         
         try{

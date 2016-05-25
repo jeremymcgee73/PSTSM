@@ -84,13 +84,12 @@ function Invoke-TsmCommand
         {
             Throw "The TSM username is not incorrect."
         }
-
         else
         {
             $errorOut = $TsmOutput.Substring(9)
             $errorOut = ($errorOut -split '\n')[0]
 
-            $errorOut
+            Throw $errorOut
         }
     }
     End

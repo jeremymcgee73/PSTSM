@@ -14,11 +14,11 @@ function New-TsmAssociation
 {
     Param
     (
-        [Parameter(Mandatory=$true,Position=2)]
+        [Parameter(Mandatory=$true,Position=0)]
 		[String]$PolicyDomain,
         [Parameter(Mandatory=$true,Position=1)]
 		[String]$SchedName,
-        [Parameter(Mandatory=$true,Position=0)]
+        [Parameter(Mandatory=$true,Position=2)]
 		[String]$NodeName,
 		[String]$UserName,
 		[String]$Password,
