@@ -7,7 +7,7 @@
 .EXAMPLE
    Set-TsmCredential username password
 .EXAMPLE
-   Set-TsmCredential -TsmUserName username -TsmPassword password
+   Set-TsmCredential -UserName username -Password password
 #>
 function Set-TsmCredential
 {
@@ -19,17 +19,17 @@ function Set-TsmCredential
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
-        $TsmUserName,
+        $UserName,
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=1)]
-        $TsmPassword
+        $Password
     )
 
 
     Process
     {
-        $MyInvocation.MyCommand.Module.PrivateData['TsmUserName'] = $TsmUserName
-        $MyInvocation.MyCommand.Module.PrivateData['TsmPassword'] = $TsmPassword
+        $MyInvocation.MyCommand.Module.PrivateData['TsmUserName'] = $UserName
+        $MyInvocation.MyCommand.Module.PrivateData['TsmPassword'] = $Password
     }
 }

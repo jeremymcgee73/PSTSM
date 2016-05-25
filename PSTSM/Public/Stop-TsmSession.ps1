@@ -1,6 +1,6 @@
 ﻿<#
 .Synopsis
-   Stops the TSM Sessions running on a server.
+   Stops one or more TSM Sessions running on a server.
 .DESCRIPTION
    This cmdlet stops TSM sessions running on a server. The default
    server is the connection set in your opt file. You can also choose

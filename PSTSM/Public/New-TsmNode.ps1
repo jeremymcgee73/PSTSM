@@ -8,7 +8,7 @@
 .EXAMPLE
    New-TsmNode NODENAME PASSWORD DOMAIN
 .EXAMPLE
-   New-TsmNode -NodeName NODENAME -Password PASSWORD -Domain DOMAIN
+   New-TsmNode -NodeName NODENAME -NodePassword PASSWORD -NodeDomain DOMAIN
 #>
 function New-TsmNode
 {
@@ -31,7 +31,12 @@ function New-TsmNode
     }
     Process
     {
-        Invoke-TsmCommand -Command "Register Node $NodeName $NodePassword domain=$NodeDomain" @psboundparameters
+        try{
+            Invoke-TsmCommand -Command "Register Node $NodeName $NodePassword domain=$NodeDomain" @psboundparameters | Out-Null
+        }
+        catch {
+            Write-Error $_
+        }
     }
     End
     {

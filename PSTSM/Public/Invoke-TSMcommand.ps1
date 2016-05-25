@@ -68,9 +68,9 @@ function Invoke-TsmCommand
         }
 
 
-
         $TsmParams = @($TCPServerAddressCommand,$TCPPortCommand,$UserNameCommand,$PasswordCommand,"-displaymode=table","-dataonly=y","-tab",$Command)
         $TsmOutput = & dsmadmc $TsmParams  2>&1 | Out-String
+
 
         if($LASTEXITCODE -eq 0)
         {
@@ -84,9 +84,13 @@ function Invoke-TsmCommand
         {
             Throw "The TSM username is not incorrect."
         }
+
         else
         {
-            Throw $TsmOutput
+            $errorOut = $TsmOutput.Substring(9)
+            $errorOut = ($errorOut -split '\n')[0]
+
+            $errorOut
         }
     }
     End

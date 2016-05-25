@@ -35,11 +35,6 @@ function Get-TsmNode
     }
     Process
     {
-        #We are using splatting to pass the parameters to Invoke-TSMCommand
-        #But, NodeName is not a parameter that it accepts so we must remove it.
-        if ($PSBoundParameters['NodeName']) {
-            $PSBoundParameters.Remove('NodeName') | Out-Null
-        }
 
         #We only want to set the nodename to query, if it were passed
         $TsmNodeCommand = "query node"
@@ -47,12 +42,16 @@ function Get-TsmNode
         {
             $TsmNodeCommand = $TsmNodeCommand + " $NodeName"
         }
+        
+        try{
+            $executeTSM = Invoke-TsmCommand -Command $TsmNodeCommand @psboundparameters
+            $TsmNodes = ConvertFrom-Csv -Delimiter "`t" -InputObject $executeTSM -Header "NodeName", "Platform", "PolicyDomain", "DaysSinceLastAccess", "DaysSincePasswordSet", "Locked"
+            return $TsmNodes
+        }
+        catch {
+            Write-Error $_
+        }
 
-        $executeTSM = Invoke-TsmCommand -Command $TsmNodeCommand @psboundparameters
-        $TsmNodes = ConvertFrom-Csv -Delimiter "`t" -InputObject $executeTSM -Header "NodeName", "Platform", "PolicyDomain", "DaysSinceLastAccess", "DaysSincePasswordSet", "Locked"
-
-
-        return $TsmNodes
 
     }
     End
