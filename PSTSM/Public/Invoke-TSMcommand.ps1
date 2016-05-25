@@ -52,31 +52,25 @@ function Invoke-TsmCommand
             $TCPPortCommand = "-TCPPort " + $TCPPort
         }
 
-        #I think if the password is set to generate, you may not need a password?
 
         #Check to see if a username and password werent passed with parameters
-        if($UserName -eq "" -and $Password -eq "") {
-            # If not maybe the username was set in the private data field
-            if($privDataUserName -ne "" -and $privDataPassWord -ne "") {
-                $UserNameCommand = "-id=" + $privDataUserName
-                $PasswordCommand =  "-password=" + $privDataPassWord
-            }
+        if($UserName -ne "" -and $Password -ne "") {
+            $UserNameCommand = "-id=" + $UserName
+            $PasswordCommand =  "-password=" + $Password
         }
         #the username and password were passed with parameters
+        elseif($privDataUserName -ne $null -and $privDataPassWord -ne $null) {
+                $UserNameCommand = "-id=" + $privDataUserName
+                $PasswordCommand =  "-password=" + $privDataPassWord
+        }
         else {
-                $UserNameCommand = "-id=" + $UserName
-                $PasswordCommand =  "-password=" + $Password
+            Throw "A TSM username and/or password were not given."
         }
 
-        #It was a ton easier to just add the baclient folder to the path. This really should be checked for failure...
-        #Invoke-Expression "dsmadmc.exe $TCPServerAddressCommand $TCPPortCommand $UserNameCommand $PasswordCommand -displaymode=table -dataonly=y -tab $Command "
 
-        #"dsmadmc.exe $TCPServerAddressCommand $TCPPortCommand $UserNameCommand $PasswordCommand -displaymode=table -dataonly=y -tab $Command "
 
         $TsmParams = @($TCPServerAddressCommand,$TCPPortCommand,$UserNameCommand,$PasswordCommand,"-displaymode=table","-dataonly=y","-tab",$Command)
         $TsmOutput = & dsmadmc $TsmParams  2>&1 | Out-String
-
-        #$LASTEXITCODE
 
         if($LASTEXITCODE -eq 0)
         {
@@ -84,11 +78,15 @@ function Invoke-TsmCommand
         }
         elseif($LASTEXITCODE -eq 137)
         {
-            Write-Error "The TSM username and password is incorrect"
+            Throw "The TSM password is incorrect."
+        }
+        elseif($LASTEXITCODE -eq 53)
+        {
+            Throw "The TSM username is not incorrect."
         }
         else
         {
-            Write-Error $TsmOutput
+            Throw $TsmOutput
         }
     }
     End
