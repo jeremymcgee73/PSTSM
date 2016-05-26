@@ -1,25 +1,25 @@
 ﻿<#
 .Synopsis
-   Stops one or more TSM Sessions running on a server.
+   Stops one or more TSM Processs running on a server.
 .DESCRIPTION
-   This cmdlet stops TSM sessions running on a server. The default
+   This cmdlet stops TSM Processs running on a server. The default
    server is the connection set in your opt file. You can also choose
    which TSM server you are querying. 
 .EXAMPLE
-   Stop-TsmSession 12345
+   Stop-TsmProcess 12345
 .EXAMPLE
-   Get-TsmSession FS* | Stop-TsmSession
+   Get-TsmProcess 12345 | Stop-TsmProcess
 .INPUTS
-   TSMSessions can be piped to Stop-TsmSession
+   TSMProcesss can be piped to Stop-TsmProcess
 #>
-function Stop-TsmSession
+function Stop-TsmProcess
 {
     Param
     (
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
-		$SessionNumber,
+		$ProcessNumber,
 		[String]$UserName,
 		[String]$Password,
 		[String]$TCPServerAddress,
@@ -31,15 +31,15 @@ function Stop-TsmSession
     }
     Process
     {
-        $cancelSession = ($_.SessionNumber).replace(",","")
-
+        $ProcessNumber = ($_.ProcessNumber).replace(",","")
+            
         try{
-            Invoke-TsmCommand -Command "cancel session $cancelSession" @psboundparameters | Out-Null
+            Invoke-TsmCommand -Command "cancel Process $ProcessNumber" @psboundparameters | Out-Null
         }
         catch {
             Write-Error $_
         }
-
+        
     }
     End
     {
