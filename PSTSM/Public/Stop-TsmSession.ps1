@@ -33,7 +33,6 @@ function Stop-TsmSession
     {
         $cancelSession = ($_.SessionNumber).replace(",","")
         $SessionNumber | ForEach-Object {
-             Write-Verbose "Session " + $cancelSession + " Stopped"
              Invoke-TsmCommand -Command "cancel session $cancelSession " @psboundparameters | Out-Null
         }
 

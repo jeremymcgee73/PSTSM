@@ -54,7 +54,7 @@ function Get-TsmSession
             $sessions = $TsmSessionAll
         }
 
-        return $sessions
+        Write-Output $sessions
 
     }
     End

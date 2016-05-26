@@ -1,26 +1,33 @@
 ﻿<#
 .Synopsis
-   Removes one or more TSM node.
+   Removes one or more TSM associations.
 .DESCRIPTION
-   This function removes nodes from TSM. The default
+   This function removes associations from TSM. The default
    server is the connection set in your opt file. You can also choose
    which TSM server you are querying. 
 .EXAMPLE
-   Remove-TsmNode NODENAME
+   Get-TsmAssociation DOMAIN SCHEDULE NODENAME
 .EXAMPLE
-   Remove-TsmNode -NodeName NODENAME
+   Get-TsmAssociation -PolicyDomain DOMAIN -ScheduleName SCHEDULE -NodeName NODENAME
 .EXAMPLE
-   Get-TsmNode FS* | Remove-TsmNode
+   Get-TsmAssociation DOMAIN SCHEDULE FS* | Remove-TsmAssociation
 #>
-function Remove-TsmNode
+function Remove-TsmAssociation
 {
-[CmdletBinding(SupportsShouldProcess,ConfirmImpact='High')] 
+    [CmdletBinding(SupportsShouldProcess,ConfirmImpact='High')] 
     Param
     (
-        [CmdletBinding(DefaultParametersetName='None',SupportsShouldProcess=$True,ConfirmImpact='High')] 
         [Parameter(Mandatory=$true,
                    ValueFromPipelineByPropertyName=$true,
                    Position=0)]
+		[String]$PolicyDomain,
+        [Parameter(Mandatory=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=1)]
+		[String]$ScheduleName,
+        [Parameter(Mandatory=$true,
+                   ValueFromPipelineByPropertyName=$true,
+                   Position=2)]
 		[String]$NodeName,
 		[String]$UserName,
 		[String]$Password,
@@ -33,8 +40,7 @@ function Remove-TsmNode
     }
     Process
     {
-
-        $TsmCommand = "Remove Node $NodeName "
+        $TsmCommand = "delete association $PolicyDomain $ScheduleName $NodeName"
         try{
             if ($PSCmdlet.ShouldProcess($NodeName)) {  
                 Invoke-TsmCommand -Command $TsmCommand @psboundparameters | Out-Null

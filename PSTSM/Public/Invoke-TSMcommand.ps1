@@ -74,7 +74,10 @@ function Invoke-TsmCommand
 
         if($LASTEXITCODE -eq 0)
         {
-            $TsmOutput
+            Write-Verbose "The following TSM command was ran:"
+            Write-Verbose $Command
+
+            Write-Output $TsmOutput
         }
         elseif($LASTEXITCODE -eq 137)
         {

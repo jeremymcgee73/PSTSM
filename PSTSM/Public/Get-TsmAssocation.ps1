@@ -10,6 +10,8 @@
 .EXAMPLE
    Get-TsmAssociation -PolicyDomain POLICYDOMAIN -SchedName SCHEDNAME
 .EXAMPLE
+   Get-TsmAssociation -PolicyDomain POLICYDOMAIN -NodeName NODENAME
+.EXAMPLE
    Get-TsmAssociation -PolicyDomain POLICYDOMAIN
 .EXAMPLE
    Get-TsmAssociation POLICYDOMAIN SCHEDNAME
@@ -20,18 +22,20 @@
 #>
 function Get-TsmAssociation
 {
-    [CmdletBinding(DefaultParametersetName='None')] 
+    [CmdletBinding()] 
     param( 
-		    [String]$UserName,
-		    [String]$Password,
-		    [String]$TCPServerAddress,
-		    [int]$TCPPort,
-        [Parameter(ParameterSetName='Policy',Mandatory=$true,Position=0)][String]$PolicyDomain,
-        [Parameter(ParameterSetName='Policy',Mandatory=$false,Position=1)][string]$SchedName
+        [String]$UserName,
+        [String]$Password,
+        [String]$TCPServerAddress,
+        [int]$TCPPort,
+        [Parameter(Mandatory=$true,Position=0)][String]$PolicyDomain,
+        [Parameter(Mandatory=$false,Position=1)][string]$SchedName,
+        [Parameter(Mandatory=$false,Position=2)][string]$NodeName
     )
 
     Begin
     {
+        $Nodes = @()
     }
     Process
     {
@@ -50,13 +54,32 @@ function Get-TsmAssociation
         
         try{
             $executeTSM = Invoke-TsmCommand -Command $TsmAssociationCommand @psboundparameters
-            $TsmAssociations = ConvertFrom-Csv -Delimiter "`t" -InputObject $executeTSM -Header "PolicyDomain", "ScheduleName", "AssociatedNodes"
-            return $TsmAssociations
+            $TsmAssociations = ConvertFrom-Csv -Delimiter "`t" -InputObject $executeTSM -Header "PolicyDomain", "ScheduleName", "AssociatedNodes" 
+
+            #Tivoli returns assocations with all of then nodes in one cell.
+            foreach($Assoc in $TsmAssociations) {
+                foreach($AssocNode in $Assoc.AssociatedNodes -split '\s+') {
+
+                    $Node = [PSCustomObject] @{
+                      PolicyDomain=$Assoc.PolicyDomain
+                      ScheduleName=$Assoc.ScheduleName
+                      NodeName=$AssocNode
+                    }
+
+                    $Nodes += $Node
+                }          
+            }
+
+            if($NodeName) {
+                Write-Output $Nodes | Where-Object {$_.NodeName -like "$NodeName"}
+            }
+            else {
+                Write-Output $Nodes
+            }
         }
         catch {
             Write-Error $_
         }
-
 
     }
     End
