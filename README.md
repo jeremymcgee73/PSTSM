@@ -45,10 +45,3 @@ There are a few functions I would like to add: querying the log, granting proxy 
 ##Credentials
 There are two ways to set the username and password used by this module. You can pass parameters using `-Username USERNAME -Password PASSWORD`, or you can set them once with `Set-TsmCredential -Username USERNAME -Password PASSWORD`.
 
-
-##Help
-You can use `Get-Command -Module PSTSM` to get a list of cmdlets in the module.
-You can use `Get-Help command` to view the help information for the cmdlet.
-
-##TO DO
-There are a few functions I would like to add: querying the log, granting proxy rights, etc. We do not use the archive functions of TSM, so I do not plan on creating them in PSTSM.
