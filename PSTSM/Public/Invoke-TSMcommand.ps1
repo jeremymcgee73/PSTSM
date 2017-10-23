@@ -45,7 +45,7 @@ function Invoke-TsmCommand
         #If the serveraddress or tcpport is passed, then we add that to the command.
         #I don't really need this because my server and port are set in the dsm.opt file.
         if($TCPServerAddress) {
-            $TCPServerAddressCommand = "-TCPServeraddress " + $TCPServeraddress
+            $TCPServerAddressCommand = "-TCPServeraddress='" + $TCPServeraddress + "'"
         }
 
         if($TCPPort) {
