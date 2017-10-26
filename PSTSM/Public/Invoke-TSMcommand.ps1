@@ -49,7 +49,7 @@ function Invoke-TsmCommand
         }
 
         if($TCPPort) {
-            $TCPPortCommand = "-TCPPort='" + $TCPPort + "'"
+            $TCPPortCommand = "-TCPPort=" + $TCPPort
         }
 
 
